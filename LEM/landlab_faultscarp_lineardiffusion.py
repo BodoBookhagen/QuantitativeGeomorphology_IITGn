@@ -16,7 +16,7 @@ from pylab import show, figure
 
 #%% Create simple fault scarp model with linear diffusion
 
-#Create a raster grid with 25 rows, 40 columns, and cell spacing of 10 m
+#Create a raster grid with 100 rows, 100 columns, and cell spacing of 10 m
 n=100
 mg = RasterModelGrid((n, n), 1.0)
 
@@ -35,7 +35,13 @@ mg.set_closed_boundaries_at_grid_edges(right_is_closed=True, top_is_closed=False
 fault_y = 50.0
 upthrown_nodes = np.where(mg.node_y>fault_y)
 #raise nodes by 10m
+#z[upthrown_nodes] = z[upthrown_nodes] + 10.0
 z[upthrown_nodes] += 10.0
+
+# View the grid
+figure()
+imshow_grid(mg, 'topographic__elevation', cmap='viridis', grid_units=['m','m'])
+show()
 
 #make cross section
 crosssection_center_org = mg.node_vector_to_raster(z, flip_vertically=True)[:,np.int(np.round(n/2))].copy()
@@ -50,22 +56,18 @@ pl.xlabel('Distance along profile [m]', fontsize=12)
 pl.ylabel('Height [m]', fontsize=12)
 pl.title('Profile across linear diffusion scarp', fontsize=16)
 
-# View the grid
-figure()
-imshow_grid(mg, 'topographic__elevation', cmap='viridis', grid_units=['m','m'])
-show()
-
 #Instantiate the diffusion component:
 kappa_linear_diffusivity=0.01 #in m2 per year L2/T
 ld = LinearDiffuser(grid=mg, linear_diffusivity=kappa_linear_diffusivity)
 
-#set a model timestep inyr
+#set a model timestep in yr
 #(the component will subdivide this as needed to keep things stable)
 dt = 100.
+#ld.run_one_step(dt)
 
 #Model landscape, here we do 25 time steps
 for i in range(25):
-        ld.run_one_step(dt)
+    ld.run_one_step(dt)
 
 #Plot new landscape
 figure()
@@ -74,7 +76,7 @@ show()
 
 # Plot profile across the fault
 mg_ld1 = mg.node_vector_to_raster(z, flip_vertically=True)
-crosssection_center_ld = mg.node_vector_to_raster(mg_ld1, flip_vertically=True)[:,np.int(np.round(n/2))]
+crosssection_center_ld = mg.node_vector_to_raster(mg_ld1)[:,np.int(np.round(n/2))]
 crosssection_center_ycoords_ld = mg.node_vector_to_raster(mg.node_y, flip_vertically=True)[:,np.int(np.round(n/2))]
 fg = pl.figure()
 pl.plot(crosssection_center_ycoords, crosssection_center_org, 'k', \
@@ -86,9 +88,48 @@ pl.title('Profile across linear diffusion scarp', fontsize=16)
 pl.plot(crosssection_center_ycoords_ld, crosssection_center_ld, 'b', \
         linewidth=1, label='ld after n*dt')
 
+#%% Create simple fault scarp model with linear diffusion and save time steps
+n=100
+mg = RasterModelGrid((n, n), 1.0)
+z = mg.add_zeros('node', 'topographic__elevation')
+mg.set_closed_boundaries_at_grid_edges(right_is_closed=True, top_is_closed=False, \
+                                       left_is_closed=True, bottom_is_closed=False)
+fault_y = 50.0
+upthrown_nodes = np.where(mg.node_y>fault_y)
+z[upthrown_nodes] += 10.0
+
+crosssection_center_org = mg.node_vector_to_raster(z, flip_vertically=True)[:,np.int(np.round(n/2))].copy()
+crosssection_center_ycoords = mg.node_vector_to_raster(mg.node_y, flip_vertically=True)[:,np.int(np.round(n/2))].copy()
+kappa_linear_diffusivity=0.01 #in m2 per year L2/T
+ld = LinearDiffuser(grid=mg, linear_diffusivity=kappa_linear_diffusivity)
+dt = 250.
+time_steps = 50
+crosssection_center_ld = np.empty((time_steps, len(crosssection_center_org)))
+crosssection_center_ycoords_ld = np.empty((time_steps, len(crosssection_center_org)))
+
+fg = pl.figure()
+pl.plot(crosssection_center_ycoords, crosssection_center_org, 'k', \
+        linewidth=3, label='Original Topography')
+pl.grid()
+pl.xlabel('Distance along profile [m]', fontsize=12)
+pl.ylabel('Height [m]', fontsize=12)
+pl.title('Profile across linear diffusion scarp', fontsize=16)
+
+for i in range(time_steps):
+    mg_ld1 = mg.node_vector_to_raster(z, flip_vertically=True)
+    crosssection_center_ld[i,:] = mg.node_vector_to_raster(mg_ld1)[:,np.int(np.round(n/2))].copy()
+    crosssection_center_ycoords_ld[i,:] = mg.node_vector_to_raster(mg.node_y, flip_vertically=True)[:,np.int(np.round(n/2))].copy()
+    pl.plot(crosssection_center_ycoords_ld[i,:], crosssection_center_ld[i,:], 'b', \
+        linewidth=1, label='ld after n*dt')
+    ld.run_one_step(dt)
+
+
+# Plot profile across the fault
+
+
 #%% Create tilted plan with scarp
-mg['node']['topographic__elevation'] += (mg.node_y/10 + 
-                                         mg.node_x/10 + np.random.rand(len(mg.node_y)) / 10)
+#mg['node']['topographic__elevation'] += (mg.node_y/10 + 
+#                                         mg.node_x/10 + np.random.rand(len(mg.node_y)) / 10)
 
 #%% Create oblique fault scarp
 #Create a raster grid with 25 rows, 40 columns, and cell spacing of 10 m
