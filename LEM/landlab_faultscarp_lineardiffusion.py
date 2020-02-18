@@ -16,7 +16,7 @@ from pylab import show, figure
 
 #%% Create simple fault scarp model with linear diffusion
 
-#Create a raster grid with 100 rows, 100 columns, and cell spacing of 10 m
+#Create a raster grid with 100 rows, 100 columns, and cell spacing of 1 m
 n=100
 mg = RasterModelGrid((n, n), 1.0)
 
@@ -116,23 +116,19 @@ pl.ylabel('Height [m]', fontsize=12)
 pl.title('Profile across linear diffusion scarp', fontsize=16)
 
 for i in range(time_steps):
+    ld.run_one_step(dt)
     mg_ld1 = mg.node_vector_to_raster(z, flip_vertically=True)
     crosssection_center_ld[i,:] = mg.node_vector_to_raster(mg_ld1)[:,np.int(np.round(n/2))].copy()
     crosssection_center_ycoords_ld[i,:] = mg.node_vector_to_raster(mg.node_y, flip_vertically=True)[:,np.int(np.round(n/2))].copy()
     pl.plot(crosssection_center_ycoords_ld[i,:], crosssection_center_ld[i,:], 'b', \
         linewidth=1, label='ld after n*dt')
-    ld.run_one_step(dt)
 
 
 # Plot profile across the fault
 
 
-#%% Create tilted plan with scarp
-#mg['node']['topographic__elevation'] += (mg.node_y/10 + 
-#                                         mg.node_x/10 + np.random.rand(len(mg.node_y)) / 10)
-
 #%% Create oblique fault scarp
-#Create a raster grid with 25 rows, 40 columns, and cell spacing of 10 m
+#Create a raster grid with 100 rows, 100 columns, and cell spacing of 1 m
 n=100
 mg = RasterModelGrid((n, n), 1.0)
 
