@@ -16,7 +16,7 @@ gdal_translate -of AAIGrid Baspa_SRTM1_500m_UTM44N_WGS84.tif Baspa_SRTM1_500m_UT
 from landlab.io import read_esri_ascii
 from landlab.components import LinearDiffuser
 from landlab.plot import imshow_grid
-from landlab import RasterModelGrid, CLOSED_BOUNDARY, FIXED_VALUE_BOUNDARY
+from landlab import RasterModelGrid
 from matplotlib.pyplot import figure, show, plot, xlabel, ylabel, title, loglog, legend, scatter, grid
 import matplotlib.pyplot as plt
 import numpy as np
