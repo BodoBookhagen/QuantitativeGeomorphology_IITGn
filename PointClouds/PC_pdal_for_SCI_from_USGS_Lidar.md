@@ -58,13 +58,13 @@ Create the file `Pozo_USGS_UTM11_NAD83_all_color_cl2_idw.json`:
            "type": "writers.gdal"
        }
    ]
- }
+}
 ```
 
 Run the pipeline on the command line with:
 
 ```
-pdal pipeline Pozo_USGS_UTM11_NAD83_all_color_cl2_idw.json`
+pdal pipeline Pozo_USGS_UTM11_NAD83_all_color_cl2_idw.json
 ```
 
 *Compiled with:*

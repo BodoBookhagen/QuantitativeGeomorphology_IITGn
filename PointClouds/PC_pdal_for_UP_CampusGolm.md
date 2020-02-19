@@ -1,4 +1,11 @@
 # Short Introduction to Point Cloud Processing
+In this exercise, we will rely on data from the University of Potsdam (UP) campus Golm data. These are:
+1. The airborne lidar data *ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip.laz*
+2. The UAV (drone) data from a Mavic Pro: *UAV_mavicpro2_nadir_15deg_highq_dense_PC_10cm_cl.laz*
+3. The UAV (drone) data from an inspire2: *UAV_inspire2_1031cameras_highq_dense_pc_10cm_cl.laz*
+
+These data were distributed during the workshop on a USB memory stick.
+
 ## PDAL
 Use [PDAL](https://pdal.io/index.html) for pointcloud analysis, filtering, and classification.
 
@@ -9,6 +16,17 @@ pdal info --summary ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip.laz
 
 pdal info -p 0 ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip.laz
 pdal info -p 0-10 ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip.laz
+```
+
+## Downsampling lidar data
+We downsample the data to one point in every 0.25x0.25x0.25 m voxel. This will use the point that is closed to the center of the voxel and will rely on actual lidar points. See [voxelcenternearestneighbor](https://pdal.io/stages/filters.voxelcenternearestneighbor.html?highlight=voxelcenternearestneighbor).
+
+```bash
+pdal translate \
+  ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip.laz \
+  -o ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip_voxel25cm.laz \
+  voxelcenternearestneighbor \
+  --filters.voxelcenternearestneighbor.cell=0.25
 ```
 
 ## Ground detection (SMRF)
@@ -88,17 +106,6 @@ pdal translate \
    --filters.range.limits="Classification[2:2]"
 ```
 
-## Additional filtering commands
-See [voxelcenternearestneighbor](https://pdal.io/stages/filters.voxelcenternearestneighbor.html?highlight=voxelcenternearestneighbor).
-
-```bash
-pdal translate \
-  ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip.laz \
-  -o ALS_Golm_May06_2018_Milan_UTM33N_WGS84_6digit_cl_clip_voxel.laz \
-  voxelcenternearestneighbor \
-  --filters.voxelcenternearestneighbor.cell=1.0
-```
-
 ## Creating a DEM and saving a GeoTIFF
 We rely on the IDW (Inverse Distance Weighted) Interpolation implemented in [writers.gdal](https://pdal.io/stages/writers.gdal.html?highlight=writers%20gdal). this requires a control file (`.json`) that defines parameters through a pipeline.
 
@@ -121,7 +128,7 @@ Create the file `ALS_Golm_nonoise_cl2_idw.json`:
 
 Run the pipeline on the command line with:
 ```
-pdal pipeline ALS_Golm_nonoise_cl2_idw.json`
+pdal pipeline ALS_Golm_nonoise_cl2_idw.json
 ```
 
 Alternatively, you can only output the interpolated DEM values with the `idw` interpolation:

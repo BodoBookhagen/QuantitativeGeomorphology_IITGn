@@ -1,0 +1,13 @@
+{
+   "pipeline": [
+       "Pozo_USGS_UTM11_NAD83_all_color_cl2.laz",
+       {
+           "filename":"Pozo_USGS_UTM11_NAD83_all_color_cl2_DEM_1m.tif",
+           "gdaldriver":"GTiff",
+           "output_type":"idw",
+           "resolution":"1.0",
+           "window_size": "10",
+           "type": "writers.gdal"
+       }
+   ]
+}
