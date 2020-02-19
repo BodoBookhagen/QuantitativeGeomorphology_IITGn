@@ -1,3 +1,4 @@
+# Short Introduction to Point Cloud Processing
 ## PDAL
 Use [PDAL](https://pdal.io/index.html) for pointcloud analysis, filtering, and classification.
 
@@ -118,7 +119,10 @@ Create the file `ALS_Golm_nonoise_cl2_idw.json`:
  }
 ```
 
-Run the pipeline on the command line with: `pdal pipeline gdal_tif_driver.json`
+Run the pipeline on the command line with:
+```
+pdal pipeline ALS_Golm_nonoise_cl2_idw.json`
+```
 
 Alternatively, you can only output the interpolated DEM values with the `idw` interpolation:
 ```json
