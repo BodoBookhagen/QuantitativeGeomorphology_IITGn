@@ -20,15 +20,15 @@ Please see [QGeomorph_Workshop_Required_Software.pdf](docs/QGeomorph_Workshop_Re
 - River-network Exercises
 
 *Wednesday, 19.02.2020*
-- Introduction of Matlab [TopoToolbox](https://topotoolbox.wordpress.com/)
-- Exercises in the computer lab: relief, steepness indices, identifying knick points, chi analysis
-
-*Thursday, 19.02.2020*
 - Introduction to Lidar and SfM Point Cloud (PC) analysis
+- Using a Terrestrial Lidar scanner to generate your own point Cloud
 - PC analysis, visualization and classification using open-source tools
 - Shape detection on PC data
 - gridding of PC data to DEMs and generating your own high-resolution DEMs
 
+*Thursday, 19.02.2020*
+- Introduction of Matlab [TopoToolbox](https://topotoolbox.wordpress.com/)
+- Exercises in the computer lab: relief, steepness indices, identifying knick points, chi analysis
+
 *Friday, 19.02.2020*
-- Using a Terrestrial Lidar scanner to generate your own point Cloud
 - Examples and Exercises from the Himalaya
