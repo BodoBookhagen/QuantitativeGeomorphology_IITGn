@@ -10,9 +10,9 @@ Please see [QGeomorph_Workshop_Required_Software.pdf](docs/QGeomorph_Workshop_Re
 - Introduction to [Digital Elevation Model](lectures/Lecture1_DEM_lr.pdf) analysis
 - Introduction to [Tectonic Geomorphology](lectures/Lecture2_TectonicGeomorphology_lr.pdf)
 - Exercises with Python using synthetic and real-world DEMs:
-  - Creating a Gaussian Hill and performing analytical and numerical slope calculations ([Python](DEM/GaussianHill/gaussian_hill.py), [Jupyter-Notebook](DEM/GaussianHill/"Gaussian Hill and DEM analysis.ipynb"), [PDF]("DEM/GaussianHill/Gaussian Hill and DEM analysis.pdf"))
-  - Performing FlowDirection and FlowAccumulation calculation on a Gaussian Hill ([Python](DEM/GaussianHill/gaussian_hill_richdem.py), [Jupyter-Notebook](DEM/GaussianHill/"Gaussian Hill - FlowDirection and FlowAccumulation.ipynb"), [PDF]("DEM/GaussianHill/'Gaussian Hill - FlowDirection and FlowAccumulation.pdf"))
-  - Hypsometry and Slope Distributions of Earth and Mars ([Jupyter Notebook]("DEM/Earth_Mars/Earth and Mars Hypsometry.ipynb"), [PDF]("DEM/Earth_Mars/Earth and Mars Hypsometry.pdf"))
+  - Creating a Gaussian Hill and performing analytical and numerical slope calculations ([Python](DEM/GaussianHill/gaussian_hill.py), [Jupyter-Notebook](DEM/GaussianHill/Gaussian Hill and DEM analysis.ipynb), [PDF](DEM/GaussianHill/Gaussian Hill and DEM analysis.pdf))
+  - Performing FlowDirection and FlowAccumulation calculation on a Gaussian Hill ([Python](DEM/GaussianHill/gaussian_hill_richdem.py), [Jupyter-Notebook](DEM/GaussianHill/Gaussian Hill - FlowDirection and FlowAccumulation.ipynb), [PDF](DEM/GaussianHill/Gaussian Hill - FlowDirection and FlowAccumulation.pdf))
+  - Hypsometry and Slope Distributions of Earth and Mars ([Jupyter Notebook](DEM/Earth_Mars/Earth and Mars Hypsometry.ipynb), [PDF](DEM/Earth_Mars/Earth and Mars Hypsometry.pdf))
 - Resampling and gridding artifacts
 - Comparing slope and hypsometry of Earth and Mars, exploring 2D histograms
 - Flow Direction and Flowaccumulation calculation
