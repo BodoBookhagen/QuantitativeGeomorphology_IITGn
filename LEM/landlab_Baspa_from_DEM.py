@@ -50,25 +50,25 @@ def load_dem_tif(dem_fname):
     ul_y = gt[3]
     utm_x = np.arange(ul_x, ul_x + (gt[1]*(cols+1)), gt[1])
     utm_y = np.arange(ul_y, ul_y + (gt[5]*(rows+1)), gt[5])
-    
+
     mg = RasterModelGrid((rows,cols), abs(gt[1]))
     mg.set_closed_boundaries_at_grid_edges(False, False, False, False)
     _ = mg.add_field('topographic__elevation', dem, at = 'node')
-    
+
     return mg, gt, cs, nr_of_x_cells, nr_of_y_cells, idx0, utm_x, utm_y
 
 #%% Setup Baspa model
 baspa_fname = 'Baspa_Hydroshed_500m_UTM44N_WGS84_clip.tif'
 mg, gt, cs, nr_of_x_cells, nr_of_y_cells, idx0, utm_x, utm_y = load_dem_tif(baspa_fname)
-#Make sure that the imported file doesn't have any NaN/-9999 at its border. 
+#Make sure that the imported file doesn't have any NaN/-9999 at its border.
 mg.at_node['topographic__elevation'][mg.at_node['topographic__elevation'] == -9999] = np.min(mg.at_node['topographic__elevation'][mg.at_node['topographic__elevation'] > -9999])
 mg.set_closed_boundaries_at_grid_edges(right_is_closed=False, top_is_closed=False, \
                                        left_is_closed=False, bottom_is_closed=False)
 z = mg.at_node['topographic__elevation']
 
 pl.figure()
-imshow_grid(mg, 'topographic__elevation', 
-            plot_name='Baspa Hydroshed - 500m UTM44N', 
+imshow_grid(mg, 'topographic__elevation',
+            plot_name='Baspa Hydroshed - 500m UTM44N',
             allow_colorbar=True, cmap='terrain', vmin=1500, vmax=6200)
 
 ld = LinearDiffuser(mg, linear_diffusivity=0.001)
@@ -96,60 +96,31 @@ for i in range(nr_time_steps):
     if np.mod(i,10) == 0:
         print('i:', i)
 
-steepnessf.calculate_steepnesses()  
+steepnessf.calculate_steepnesses()
 chif.calculate_chi()
 ## list the fields that have been created:
-mg.at_node.keys()    
+mg.at_node.keys()
 
 pl.figure()
-imshow_grid(mg, 'topographic__elevation', 
-            plot_name='Baspa after 500ky (dt=1000) - Topography', 
+imshow_grid(mg, 'topographic__elevation',
+            plot_name='Baspa after 500ky (dt=1000) - Topography',
             allow_colorbar=True, cmap='terrain',vmin=1500, vmax=6200)
 
 pl.figure()
-imshow_grid(mg, 'drainage_area', 
-            plot_name='Baspa after 500ky (dt=1000) - Drainage Area', 
+imshow_grid(mg, 'drainage_area',
+            plot_name='Baspa after 500ky (dt=1000) - Drainage Area',
             allow_colorbar=True, colorbar_label='DA', cmap='viridis')
 
 pl.figure()
-imshow_grid(mg, 'channel__steepness_index', 
-            plot_name='Baspa after 500ky (dt=1000) - Steepness Index', 
-            allow_colorbar=True, colorbar_label='Steepness', cmap='magma', 
-            vmin=np.percentile(mg.at_node['channel__steepness_index'][mg.at_node['channel__steepness_index'] > 0],5), 
+imshow_grid(mg, 'channel__steepness_index',
+            plot_name='Baspa after 500ky (dt=1000) - Steepness Index',
+            allow_colorbar=True, colorbar_label='Steepness', cmap='magma',
+            vmin=np.percentile(mg.at_node['channel__steepness_index'][mg.at_node['channel__steepness_index'] > 0],5),
             vmax=np.percentile(mg.at_node['channel__steepness_index'][mg.at_node['channel__steepness_index'] > 0],95) )
-            
+
 pl.figure()
-imshow_grid(mg, 'channel__chi_index', 
-            plot_name='Baspa after 500ky (dt=1000) - Channel Chi Index', 
-            allow_colorbar=True, colorbar_label='Chi Index', cmap='plasma', 
-            vmin=np.percentile(mg.at_node['channel__chi_index'][mg.at_node['channel__chi_index'] > 0],5), 
+imshow_grid(mg, 'channel__chi_index',
+            plot_name='Baspa after 500ky (dt=1000) - Channel Chi Index',
+            allow_colorbar=True, colorbar_label='Chi Index', cmap='plasma',
+            vmin=np.percentile(mg.at_node['channel__chi_index'][mg.at_node['channel__chi_index'] > 0],5),
             vmax=np.percentile(mg.at_node['channel__chi_index'][mg.at_node['channel__chi_index'] > 0],95) )
-
-
-#%%
-for i in range(nt):
-    lin_diffuse.run_one_step(dt)
-    fr.run_one_step() # route_flow isn't time sensitive, so it doesn't take dt as input
-    #sp.run_one_step(dt)
-    mg.at_node['topographic__elevation'][mg.core_nodes] += uplift_per_step # add the uplift
-    if i % 10 == 0:
-        print ('made it to time %d' % (i*dt))
-        figure("long_profiles-Baspa")
-        profile_IDs = prf.channel_nodes(mg, mg.at_node['topographic__steepest_slope'],
-                                        mg.at_node['drainage_area'],
-                                        mg.at_node['flow__receiver_node'])
-        dists_upstr = prf.get_distances_upstream(
-            mg, len(mg.at_node['topographic__steepest_slope']),
-            profile_IDs, mg.at_node['flow__link_to_receiver_node'])
-        plot(dists_upstr[0], z[profile_IDs[0]], label=i*dt)
-
-figure("long_profiles-Baspa")
-xlabel('Distance upstream (m)')
-ylabel('Elevation (m)')
-title('Long profiles evolving through time')
-grid
-legend()
-
-figure('Baspa: topo after modeling')
-imshow_grid(mg, 'topographic__elevation', grid_units=['m','m'], var_name='Elevation (m)')
-
