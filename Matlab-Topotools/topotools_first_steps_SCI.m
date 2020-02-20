@@ -13,9 +13,9 @@ rmpath(genpath('/home/bodo/topotoolbox\.git'));
 %and github repository: https://github.com/UP-RS-ESP/DEM-KZP
 
 %% Load a DEM
-dem_fname="Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.tif";
+dem_fname='Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.tif';
 SCI_dem = GRIDobj(dem_fname);
-%imagesc(SCI_dem)
+imagesc(SCI_dem)
 imageschs(SCI_dem, SCI_dem)
 
 SCI_dem_FIL = fillsinks(SCI_dem)
@@ -35,7 +35,7 @@ SCI_FAC_w = SCI_FAC > minApix;  % masks flow accum grid (above threshold)
 
 min_drainage_area_to_process = 1e4;
 SCI_rivers_w = SCI_FAC.*(SCI_FAC.cellsize.^2) > ...
-    min_drainage_area_to_process;
+    area_threshold;
 SCI_STR_w = STREAMobj(SCI_FD, SCI_FAC_w);
 SCI_rivers_STR = STREAMobj(SCI_FD, SCI_rivers_w);
 
@@ -48,16 +48,21 @@ ylabel('UTM-Northing (m)', 'Fontsize', 12);
 xlabel('UTM-Easting (m)', 'Fontsize', 12);
 hold on
 plot(SCI_rivers_STR, 'k')
-plot
+
 [SCI_dbasins, SCI_dbasins_outlet] = drainagebasins(SCI_FD);
 
 %Plot longitudinal river profile
+figure(2)
 plotdz(SCI_rivers_STR,SCI_dem, 'color', 'k', 'linewidth', 0.5)
 hold on
 plotdz(trunk(SCI_rivers_STR),SCI_dem, 'color', 'b', 'linewidth', 3)
 
 %calculatuate relief
-SCI_DEM_rel_200m = localtopography(SCI_dem, 200);
+SCI_DEM_rel_200m = ...
+    localtopography(SCI_dem, 200);
+figure
+imageschs(SCI_dem, SCI_DEM_rel_200m)
+colorbar
 GRIDobj2geotiff(SCI_DEM_rel_200m,'filename2save.tif');
 
 % calculate slope and area from DEM
@@ -65,12 +70,16 @@ GRIDobj2geotiff(SCI_DEM_rel_200m,'filename2save.tif');
 min_str_gradient = 0.0001
 SCI_mg = imposemin(SCI_FD,SCI_dem,min_str_gradient);
 
-SCI_rivers_slope = gradient(SCI_rivers_STR,SCI_mg,'unit','tangent');
-SCI_rivers_area = SCI_FAC.Z(SCI_rivers_STR.IXgrid).*...
+SCI_rivers_slope = ...
+    gradient(SCI_rivers_STR,SCI_mg,...
+    'unit','tangent');
+SCI_rivers_area = ...
+    SCI_FAC.Z(SCI_rivers_STR.IXgrid).*...
     (SCI_FAC.cellsize).^2;
 
 figure;
-loglog(SCI_rivers_area, SCI_rivers_slope, '+')
+loglog(SCI_rivers_area, ...
+    SCI_rivers_slope, '+')
 xlabel('Drainage Area [m^2]')
 ylabel('Slope [m/m]')
 grid on
@@ -83,13 +92,18 @@ SCI_ksn045 = SCI_dem_gradient8 ./ (SCI_FAC.*...
 SCI_ksn045.name = 'ksn045';
 SCI_ksn045.zunit = 'm^0.9';
 %calculate area-slope relation for entire area (may not be useful)
-SCI_slopearea = slopearea(SCI_rivers_STR,SCI_mg,...
-    SCI_FAC, 'areabinlocs', 'median', 'gradaggfun', 'median', ...
-    'streamgradient', 'robust', 'plot', false);
+SCI_slopearea = slopearea(SCI_rivers_STR,...
+    SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false);
 
 %% Figures
 figure;
-loglog(SCI_rivers_area, SCI_rivers_slope, '.', 'color', [0.9 0.9 0.9])
+loglog(SCI_rivers_area, SCI_rivers_slope, ...
+    '.', 'color', [0.5 0.5 0.5])
 xlabel('Drainage Area [m^2]')
 ylabel('Slope [m/m]')
 grid on
@@ -105,16 +119,110 @@ xlabel('Drainage Area [m^2]')
 ylabel('Slope [m/m]')
 grid on
 hold on
-SCI_slopearea = slopearea(SCI_rivers_STR,SCI_mg,...
-    SCI_FAC, 'areabinlocs', 'median', 'gradaggfun', 'median', ...
-    'streamgradient', 'robust', 'plot', false, ...
+SCI_slopearea = ...
+    slopearea(SCI_rivers_STR, SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false, ...
     'theta', 0.45);
 loglog(SCI_slopearea.a, SCI_slopearea.g, 'ks', 'markersize' ,5)
 aeval = logspace(log10(min(SCI_slopearea.a)),log10(max(SCI_slopearea.a)),10);
 geval = SCI_slopearea.ks(1)*aeval.^SCI_slopearea.theta;
 loglog(aeval, geval, 'k-', 'linewidth', 2)
 
+%% Compare different theta
+figure;
+loglog(SCI_rivers_area, SCI_rivers_slope, '.', 'color', [0.7 0.7 0.7])
+xlabel('Drainage Area [m^2]')
+ylabel('Slope [m/m]')
+grid on
+hold on
+SCI_slopearea = ...
+    slopearea(SCI_rivers_STR, SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false, ...
+    'theta', 0.45);
+loglog(SCI_slopearea.a, SCI_slopearea.g, 'ks', 'markersize' ,5)
+aeval = logspace(log10(min(SCI_slopearea.a)),log10(max(SCI_slopearea.a)),10);
+geval = SCI_slopearea.ks(1)*aeval.^SCI_slopearea.theta;
+loglog(aeval, geval, 'k-', 'linewidth', 2)
+title('Steepness Index with \theta=0.45')
+
+figure;
+loglog(SCI_rivers_area, SCI_rivers_slope, '.', 'color', [0.7 0.7 0.7])
+xlabel('Drainage Area [m^2]')
+ylabel('Slope [m/m]')
+grid on
+hold on
+SCI_slopearea = ...
+    slopearea(SCI_rivers_STR, SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false, ...
+    'theta', 0.4);
+loglog(SCI_slopearea.a, SCI_slopearea.g, 'ks', 'markersize' ,5)
+aeval = logspace(log10(min(SCI_slopearea.a)),log10(max(SCI_slopearea.a)),10);
+geval = SCI_slopearea.ks(1)*aeval.^SCI_slopearea.theta;
+loglog(aeval, geval, 'k-', 'linewidth', 2)
+title('Steepness Index with \theta=0.4')
+
+figure;
+loglog(SCI_rivers_area, SCI_rivers_slope, '.', 'color', [0.7 0.7 0.7])
+xlabel('Drainage Area [m^2]')
+ylabel('Slope [m/m]')
+grid on
+hold on
+SCI_slopearea = ...
+    slopearea(SCI_rivers_STR, SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false, ...
+    'theta', 0.5);
+loglog(SCI_slopearea.a, SCI_slopearea.g, 'ks', 'markersize' ,5)
+aeval = logspace(log10(min(SCI_slopearea.a)),log10(max(SCI_slopearea.a)),10);
+geval = SCI_slopearea.ks(1)*aeval.^SCI_slopearea.theta;
+loglog(aeval, geval, 'k-', 'linewidth', 2)
+title('Steepness Index with \theta=0.5')
+
+figure;
+loglog(SCI_rivers_area, SCI_rivers_slope, '.', 'color', [0.7 0.7 0.7])
+xlabel('Drainage Area [m^2]')
+ylabel('Slope [m/m]')
+grid on
+hold on
+SCI_slopearea = ...
+    slopearea(SCI_rivers_STR, SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false, ...
+    'theta', 0.6);
+loglog(SCI_slopearea.a, SCI_slopearea.g, 'ks', 'markersize' ,5)
+aeval = logspace(log10(min(SCI_slopearea.a)),log10(max(SCI_slopearea.a)),10);
+geval = SCI_slopearea.ks(1)*aeval.^SCI_slopearea.theta;
+loglog(aeval, geval, 'k-', 'linewidth', 2)
+title('Steepness Index with \theta=0.6')
+
 %% Generate a map of steepness indices
+SCI_slopearea = ...
+    slopearea(SCI_rivers_STR, SCI_mg,...
+    SCI_FAC, ...
+    'areabinlocs', 'median', ...
+    'gradaggfun', 'median', ...
+    'streamgradient', 'robust', ...
+    'plot', false, ...
+    'theta', 0.45);
+
 g   = gradient(SCI_rivers_STR,SCI_dem);
 a   = getnal(SCI_rivers_STR,SCI_FAC)*SCI_FAC.cellsize^2;
 SCI_ksn = g./(a.^SCI_slopearea.theta);
@@ -131,9 +239,14 @@ axis image
 
 %% aggregate into larger segments 
 figure;
-SCI_ksna = aggregate(SCI_rivers_STR,SCI_ksn,'seglength',100);
-plotc(SCI_rivers_STR,SCI_ksna)
-caxis([0 50])
+SCI_ksna = aggregate(SCI_rivers_STR,...
+    SCI_ksn,'seglength',100);
+imageschs(SCI_dem, SCI_dem, ...
+'colormap', 'gray')
+hold on 
+plotc(SCI_rivers_STR,SCI_ksna, ...
+    'linewidth', 2)
+caxis([0 60])
 h   = colorbar;
 colormap(jet)
 h.Label.String = 'KSn';
@@ -141,9 +254,11 @@ box on
 axis image
 
 %% smooth steepness indices
-SCI_ksnsmooth = smooth(SCI_rivers_STR,SCI_ksn);
+SCI_ksnsmooth = smooth(SCI_rivers_STR,...
+    SCI_ksn);
+figure;
 plotc(SCI_rivers_STR,SCI_ksnsmooth)
-caxis([0 50])
+caxis([0 80])
 h   = colorbar;
 colormap(jet)
 h.Label.String = 'KSn';
@@ -151,7 +266,8 @@ box on
 axis image
 
 %% Export as shapefile
-S = STREAMobj2mapstruct(SCI_rivers_STR,'seglength',50,'attributes',...
+S = STREAMobj2mapstruct(SCI_rivers_STR,...
+    'seglength',50,'attributes',...
     {'ksn' SCI_ksnsmooth @mean ...
      'uparea' a @mean ...
      'gradient' g @mean});
