@@ -67,6 +67,12 @@ Run the pipeline on the command line with:
 pdal pipeline Pozo_USGS_UTM11_NAD83_all_color_cl2_idw.json
 ```
 
+**NOTE**: The output tif file is an uncompressed Float64 file. Depending on your purposes, this may be using up too much storage space. You can convert to a compressed Float32 with (will reduce file size from 102MB to 27MB):
+
+```
+gdal_translate -ot Float32 -co COMPRESS=DEFLATE -co ZLEVEL=9 Pozo_USGS_UTM11_NAD83_all_color_cl2_DEM_1m.tif Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.tif
+```
+
 *Compiled with:*
 ```bash
 pandoc --listings --variable papersize=a4paper \
