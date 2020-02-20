@@ -72,6 +72,11 @@ pdal pipeline Pozo_USGS_UTM11_NAD83_all_color_cl2_idw.json
 ```
 gdal_translate -ot Float32 -co COMPRESS=DEFLATE -co ZLEVEL=9 Pozo_USGS_UTM11_NAD83_all_color_cl2_DEM_1m.tif Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.tif
 ```
+Plot a PNG with gdal:
+```bash
+gdal_translate -of PNG -ot Byte -scale -outsize 75% 75% Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.tif Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.png
+```
+![PNG of interpolated DEM](Pozo_USGS_UTM11_NAD83_cl2_DEM_1m.png)
 
 *Compiled with:*
 ```bash
