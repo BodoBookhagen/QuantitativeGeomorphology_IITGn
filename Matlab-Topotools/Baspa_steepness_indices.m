@@ -3,7 +3,6 @@
 %on Linux systems, you can do: 
 %git clone https://github.com/wschwanghart/topotoolbox
 
-
 addpath(genpath('/home/bodo/topotoolbox'))
 rmpath(genpath('/home/bodo/topotoolbox\.git'));
 
@@ -23,10 +22,10 @@ Baspa_FD = FLOWobj(Baspa_dem_FIL,'preprocess','carve');
 Baspa_FAC = flowacc(Baspa_FD);
 
 figure
-imageschs(Baspa_dem, log10(Baspa_FAC))
+imageschs(Baspa_dem, log10(Baspa_FAC), ...
+    'ticklabels','nice','colorbar',true);
 colorbar
-title('Drainage Area (log10)', ...
-    'ticklabels','nice','colorbar',true)
+title('Drainage Area (log10)');
 ylabel('UTM-Northing (m)', 'Fontsize', 12);
 xlabel('UTM-Easting (m)', 'Fontsize', 12);
 
