@@ -11,7 +11,7 @@ rmpath(genpath('/home/bodo/topotoolbox\.git'));
 % gdalwarp -tr 30 30 -t_srs epsg:32646 -r bilinear -co COMPRESS=DEFLATE -co ZLEVEL=9 demLat_N28_N34_Lon_E075_E082.dem.nc demLat_N28_N34_Lon_E075_E082.UTM46N.WGS84.tif
 
 %% Load a DEM
-dem_fname="Baspa_SRTM1_30m_UTM46N.tif";
+dem_fname="Baspa_ALOS12_5m_UTM44N.tif";
 Baspa_dem = GRIDobj(dem_fname);
 
 %Verify that you have extracted the correct DEM:
@@ -60,8 +60,8 @@ plotdz(trunk(Baspa_rivers_STR),Baspa_dem, 'color', 'b', 'linewidth', 3)
 
 %%
 [Baspa_dbasins, Baspa_dbasins_outlet] = drainagebasins(Baspa_FD, Baspa_rivers_STR);
-%Baspa_catchment=-914457.958,3581152.5383
-[Baspa_x, Baspa_y] = snap2stream(Baspa_rivers_STR,-914457.958,3581152.5383);
+%Baspa_catchment=232287.8876,3487440.8685
+[Baspa_x, Baspa_y] = snap2stream(Baspa_rivers_STR,232287.8876,3487440.8685);
 [Baspa_dbasins, Baspa_dbasins_outlet] = ...
     drainagebasins(Baspa_FD, Baspa_x, Baspa_y);
 Baspa_dbasins.Z = logical(Baspa_dbasins.Z);

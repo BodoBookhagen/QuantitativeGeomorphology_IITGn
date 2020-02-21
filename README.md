@@ -32,7 +32,11 @@ Please see [QGeomorph_Workshop_Required_Software.pdf](docs/QGeomorph_Workshop_Re
 
 *Thursday, 19.02.2020*
 - Introduction of Matlab [TopoToolbox](https://topotoolbox.wordpress.com/)
-- Exercises in the computer lab: relief, steepness indices, identifying knick points, chi analysis
+- Using TopoToolbox to constrain topometrics, steepness indices and chi values. The DEMs are contained in the *Matlab-Topotools* folder:
+  - 1 m Lidar DEM for Santa Cruz Island ([Matlab Code](Matlab-Topotools/topotools_first_steps_SCI.m))
+  - 30m SRTM1 DEM for the Tons-Yamuna Catchments in the NW Himalaya ([Matlab Code](Matlab-Topotools/Himalaya_topotools.m))
 
 *Friday, 19.02.2020*
-- Examples and Exercises from the Himalaya
+- Examples and Exercises from the Baspa Valley in the Himalaya:
+  - DEM Analysis using a SRTM1 30m ([Matlab Code](Matlab-Topotools/Baspa_steepness_indices.m) and [PDF]([Matlab Code](Matlab-Topotools/Baspa_steepness_indices.pdf)) and ALOS PALSAR 12.5m ([Matlab Code](Matlab-Topotools/Baspa_steepness_indices_ALOS12m.m) and [PDF](Matlab-Topotools/Baspa_steepness_indices_ALOS12m.pdf)) data
+  - Using landlab to model the topography of the Baspa catchment (([Python](LEM/landlab_Baspa_from_DEM.py), [Jupyter Notebook](LEM/Baspa%20-%20Landlab%20Modeling%20from%20a%20DEM.ipynb), [PDF](LEM/Baspa%20-%20Landlab%20Modeling%20from%20a%20DEM.pdf))

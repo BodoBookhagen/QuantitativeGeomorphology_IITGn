@@ -11,7 +11,7 @@ Install Landlab with conda:
 Prepare Baspa Model (clip from Hydroshed) with:
 gdalwarp -ot Int16 -t_srs epsg:32644 -r bilinear -tr 500 500 -tap Baspa_Hydroshed_000416deg_DD_WGS84.tif Baspa_Hydroshed_500m_UTM44N_WGS84.tif
 """
-#%% Model S
+#%% Model Setup
 
 from landlab.io import read_esri_ascii
 from landlab.components import LinearDiffuser
@@ -71,17 +71,17 @@ imshow_grid(mg, 'topographic__elevation',
             plot_name='Baspa Hydroshed - 500m UTM44N',
             allow_colorbar=True, cmap='terrain', vmin=1500, vmax=6200)
 
-ld = LinearDiffuser(mg, linear_diffusivity=0.001)
+ld = LinearDiffuser(mg, linear_diffusivity=0.005)
 fr = FlowAccumulator(mg, flow_director='D8')
-fse = FastscapeEroder(mg, K_sp = 1e-5, m_sp=0.5, n_sp=1.)
+fse = FastscapeEroder(mg, K_sp = 5e-4, m_sp=0.3, n_sp=1.)
 sf = SinkFiller(mg, routing='D8')
 
 ## instantiate helper components
 chif = ChiFinder(mg)
-steepnessf = SteepnessFinder(mg, reference_concavity=0.5)
+steepnessf = SteepnessFinder(mg, reference_concavity=0.45)
 
 ## Set some variables
-rock_up_rate = 5e-3 #m/yr
+rock_up_rate = 1e-3 #m/yr
 dt = 1000 # yr
 rock_up_len = dt*rock_up_rate # m
 nr_time_steps = 500
@@ -93,7 +93,7 @@ for i in range(nr_time_steps):
     fr.run_one_step() #flow routing happens, time step not needed
     fse.run_one_step(dt) #fluvial incision happens
     ## optional print statement
-    if np.mod(i,10) == 0:
+    if np.mod(i,50) == 0:
         print('i:', i)
 
 steepnessf.calculate_steepnesses()
