@@ -42,6 +42,6 @@ For some parts of the Himalaya, the (High Mountain Asia 8-meter Digital Elevatio
 pandoc --listings --variable papersize=a4paper \
     --variable urlcolor=blue \
     -V lang=en-GB \
-    -s downloading_DEM_data.md \
-    -o downloading_DEM_data.pdf
+    -s DEM_data_compilation.md \
+    -o DEM_data_compilation.pdf
 ```
