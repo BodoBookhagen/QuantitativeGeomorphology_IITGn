@@ -38,5 +38,6 @@ Please see [QGeomorph_Workshop_Required_Software.pdf](docs/QGeomorph_Workshop_Re
 
 *Friday, 19.02.2020*
 - Examples and Exercises from the Baspa Valley in the Himalaya:
+  - Short compilation of radar- and optical-based near global DEMs [PDF](Matlab-Topotools/DEM_data_compilation.pdf)
   - DEM Analysis using a SRTM1 30m ([Matlab Code](Matlab-Topotools/Baspa_steepness_indices.m) and [PDF](Matlab-Topotools/Baspa_steepness_indices.pdf)) and ALOS PALSAR 12.5m ([Matlab Code](Matlab-Topotools/Baspa_steepness_indices_ALOS12m.m) and [PDF](Matlab-Topotools/Baspa_steepness_indices_ALOS12m.pdf)) data
   - Using landlab to model the topography of the Baspa catchment ([Python](LEM/landlab_Baspa_from_DEM.py), [Jupyter Notebook](LEM/Baspa%20-%20Landlab%20Modeling%20from%20a%20DEM.ipynb), [PDF](LEM/Baspa%20-%20Landlab%20Modeling%20from%20a%20DEM.pdf))
